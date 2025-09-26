@@ -5,10 +5,13 @@ Generate ASCII font as header of C - 生成 C 语言的 ASCII 字符字体头文
 * libfreetype
 
 ## Usage - 使用
+
 ```
 Usage: ascii_font <font-file> <font-size>
        ascii_font FreeMono.ttf 16
 ```
+
+* `font-size` is **NOT** the exact bitmap pixel size, see [here](https://fonts.google.com/knowledge/choosing_type/exploring_x_height_the_em_square)
 
 Generated file list:  
 * `ascii_font.h` - the header file
