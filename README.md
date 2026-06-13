@@ -1,38 +1,68 @@
 # ascii_font
-Generate ASCII font as header of C - 生成 C 语言的 ASCII 字符字体头文件
+Generate ASCII font bitmap as a C header file.
 
-## Depends - 依赖
-* libfreetype
+Based on [hubenchang0515/ascii_font](https://github.com/hubenchang0515/ascii_font).
 
-## Usage - 使用
+## Depends
+* libfreetype2
 
+## Build
 ```
-Usage: ascii_font <font-file> <font-size>
-       ascii_font FreeMono.ttf 16
+make
 ```
 
-* `font-size` is **NOT** the exact bitmap pixel size, see [here](https://fonts.google.com/knowledge/choosing_type/exploring_x_height_the_em_square)
+## Usage
+```
+./ascii_font [options] <font-file> [font-size]
+```
 
-Generated file list:  
-* `ascii_font.h` - the header file
-* `preview.ppm` - a preview image
+### Options
+
+| Option | Description |
+|--------|-------------|
+| `-f, --font FILE` | Font file path |
+| `-s, --size PIXELS` | Font size in pixels (default: 16) |
+| `-w, --width PIXELS` | Output glyph cell width (default: auto from font) |
+| `-h, --height PIXELS` | Output glyph cell height (default: auto from font) |
+| `-C, --columns N` | Characters per row in grid (default: 16) |
+| `-S, --start N` | First character to generate (default: 0) |
+| `-E, --end N` | Last character to generate (default: 127) |
+| `-o, --output FILE` | Output header file (default: ascii_font.h) |
+| `-p, --preview FILE` | Preview image file (default: preview.ppm) |
+| `-P, --no-preview` | Skip preview image generation |
+| `-H, --no-header` | Skip header file generation |
+| `-i, --invert` | Invert grayscale values |
+| `-t, --threshold N` | Binarization threshold (0-255) |
+
+### Output Files
+* `ascii_font.h` - C header with font bitmap data (configurable via `-o`)
+* `preview.ppm` - preview image (configurable via `-p`)
 
 Read the array as `ascii_font[character][y][x]` to get pixel gray scale value.
 
-> You can also look on the gray scale value as alpha channel value.
+### Examples
 
-Example:  
-
+Basic usage:
 ```
-$ ls
-
-$ ascii_font /usr/share/fonts/truetype/freefont/FreeMono.ttf 32
-$ ls
-ascii_font.h  preview.ppm
+./ascii_font FreeMono.ttf 32
 ```
 
-Header usage example by SDL2:  
+Custom glyph dimensions:
+```
+./ascii_font -f FreeMono.ttf -s 32 -w 24 -h 48
+```
 
+Custom character range and grid columns:
+```
+./ascii_font -f FreeMono.ttf -s 16 --columns 10 -S 32 -E 126
+```
+
+Binarized + inverted output:
+```
+./ascii_font -f FreeMono.ttf -s 16 -i -t 128
+```
+
+### SDL2 Usage Example
 ```c
 #include <SDL2/SDL.h>
 
@@ -52,7 +82,7 @@ void draw_char(SDL_Renderer* renderer, int x, int y, char ch, Uint8 r, Uint8 g, 
 }
 
 void draw_text(SDL_Renderer* renderer, int x, int y, const char* text, Uint8 r, Uint8 g, Uint8 b)
-{    
+{
     for (size_t i = 0; text[i] != 0; i++)
     {
         draw_char(renderer, x + i * ASCII_FONT_WIDTH, y, text[i], r, g, b);
@@ -66,11 +96,11 @@ int main(int argc, char* argv[])
 
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
 
-    SDL_Window* window = SDL_CreateWindow("ascii_font demo", 
-                                            SDL_WINDOWPOS_UNDEFINED, 
-                                            SDL_WINDOWPOS_UNDEFINED, 
-                                            26 * ASCII_FONT_WIDTH, 
-                                            7 * ASCII_FONT_HEIGHT, 
+    SDL_Window* window = SDL_CreateWindow("ascii_font demo",
+                                            SDL_WINDOWPOS_UNDEFINED,
+                                            SDL_WINDOWPOS_UNDEFINED,
+                                            26 * ASCII_FONT_WIDTH,
+                                            7 * ASCII_FONT_HEIGHT,
                                             SDL_WINDOW_SHOWN);
 
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
@@ -103,9 +133,7 @@ EXIT:
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
-    
+
     return 0;
 }
 ```
-
-![header-usage-example](https://raw.githubusercontent.com/hubenchang0515/resource/master/ascii_font/example.png)
