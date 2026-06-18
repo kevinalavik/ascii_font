@@ -318,7 +318,7 @@ int main(int argc, char *argv[]) {
     fprintf(header, "#define ASCII_FONT_COLUMNS  %zu\n", grid_cols);
     fprintf(header, "\n");
     fprintf(header, "#ifndef ASCII_FONT_IMPLEMENTATION\n");
-    fprintf(header, "    unsigned char "
+    fprintf(header, "    extern unsigned char "
                     "ascii_font[][ASCII_FONT_HEIGHT][ASCII_FONT_WIDTH];\n");
     fprintf(header, "#else\n");
     fprintf(header, "    unsigned char "
